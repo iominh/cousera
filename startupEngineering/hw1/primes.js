@@ -28,12 +28,12 @@ function isPrime(number) {
 
 numPrimes = 0;
 number = 2;
-while(numPrimes <= primesToWrite) {
+while(numPrimes < primesToWrite) {
         if (isPrime(number)) {
                 var output = number;
-                if (numPrimes < 100) {
+                if (numPrimes < 99) {
                         output += ",";
-                }
+                } 
                 fs.appendFile(outfile,output);  
                 numPrimes++;
         }

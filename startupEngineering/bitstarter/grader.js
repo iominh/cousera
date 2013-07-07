@@ -22,10 +22,13 @@ References:
 */
 
 var fs = require('fs');
+var sys = require('util'),
+    rest = require('restler');
 var program = require('commander');
 var cheerio = require('cheerio');
 var HTMLFILE_DEFAULT = "index.html";
 var CHECKSFILE_DEFAULT = "checks.json";
+
 
 var assertFileExists = function(infile) {
     var instr = infile.toString();
@@ -76,7 +79,25 @@ if(require.main == module) {
 			    console.log(outJson);
 					
 				} else if (program.url) {
-					console.log("process url");
+					rest.get(program.url).on('complete', function(result) {
+					  if (result instanceof Error) {
+					    sys.puts('Error: ' + result.message);
+					    this.retry(5000); // try again after 5 sec
+					  } else {
+					    // write html to file and check it
+							var tempFileName = "graderTemp.html";
+							fs.writeFile(tempFileName, result, function(err) {
+								assertFileExists(tempFileName);
+						    var checkJson = checkHtmlFile(tempFileName, program.checks);
+						    var outJson = JSON.stringify(checkJson, null, 4);					
+						    console.log(outJson);
+								fs.unlink(tempFileName);
+							}); 
+
+							
+					  }
+					});
+					
 				}
 		
 

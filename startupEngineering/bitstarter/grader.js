@@ -64,13 +64,22 @@ var clone = function(fn) {
 if(require.main == module) {
     program
         .option('-c, --checks <check_file>', 'Path to checks.json', clone(assertFileExists), CHECKSFILE_DEFAULT)
-        .option('-f, --file <html_file>', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
+        .option('-f, --file <html_file>', 'Path to index.html')
         .option('-url, --url <URL>', 'Path to URL')	
         .parse(process.argv);
+				
+				if (program.file) {
+					console.log(program.file);
+					assertFileExists(program.file);
+			    var checkJson = checkHtmlFile(program.file, program.checks);
+			    var outJson = JSON.stringify(checkJson, null, 4);					
+			    console.log(outJson);
+					
+				} else if (program.url) {
+					console.log("process url");
+				}
 		
-    var checkJson = checkHtmlFile(program.file, program.checks);
-    var outJson = JSON.stringify(checkJson, null, 4);
-    console.log(outJson);
+
 } else {
     exports.checkHtmlFile = checkHtmlFile;
 }
